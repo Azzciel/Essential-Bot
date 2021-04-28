@@ -1,6 +1,6 @@
 "use strict";
 exports.__esModule = true;
-module.exports = function (message, question, callback) {
+var test = function (message, question, callback) {
     var user = message.author;
     var answer;
     message.channel.send(question)
@@ -17,3 +17,4 @@ module.exports = function (message, question, callback) {
         });
     });
 };
+exports["default"] = test;

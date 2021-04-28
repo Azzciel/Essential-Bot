@@ -3,7 +3,7 @@ import { Collection, Message, Role, TextChannel, User } from "discord.js";
 let numberTickets=0;
 const createTicket = (message:Message, user:User,roles:Collection<string,Role>)=>{
     const oldChannel=message.channel;
-    createChannel(message,'ticket',(channel:TextChannel)=>{
+    createChannel(message,`ticket ${numberTickets}`,(channel:TextChannel)=>{
         numberTickets++;
         let str='';
         roles.each((rol)=>{

@@ -8,6 +8,9 @@ const client=new Client({
 const {PREFIX}=require('../config.json')
 const command=require('./commands.js')
 const question=require('./question.js')
+const {test} =require('./test.js')
+
+
 let numberTicket = 0;
 let msg,roles;
 client.on('ready',()=>{
@@ -25,6 +28,11 @@ command(client,'kick',(message,args)=>{
         message.channel.send('That member was not found.');
     }
 })
+
+command(client,'clear',(message,args)=>{
+    
+})
+
 command(client,'ticket',(message,args)=>{
     question(message,'Ticket title?',(answer)=>{//Titulo
         const titulo=answer.content;
@@ -92,6 +100,7 @@ client.on('messageReactionAdd',(reaction,user)=>{
         createTicket(msg,user);
     }
 });
+
 /*
     //roles a mencionar
     canal solo visible para persona que creo y roles mencionados

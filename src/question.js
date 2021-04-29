@@ -1,19 +1,22 @@
 "use strict";
-exports.__esModule = true;
-module.exports = function (message, question, callback) {
-    var user = message.author;
-    var answer;
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.question = void 0;
+function question(message, question, callback) {
+    const user = message.author;
+    let answer;
     message.channel.send(question)
-        .then(function (message) {
-        var filter = function (m) { return user == m.author; };
+        .then(message => {
+        const filter = (m) => { return user == m.author; };
         message.channel.awaitMessages(filter, { max: 1, time: 120000, errors: ['time'] })
-            .then(function (collected) {
+            .then(collected => {
             answer = collected.first();
             callback(answer);
-            message["delete"]({ timeout: 5000 });
-        })["catch"](function (collected) {
-            console.log("After a minute, only " + collected.size + " out of 4 voted.");
+            message.delete({ timeout: 5000 });
+        })
+            .catch(collected => {
+            console.log(`After a minute, only ${collected.size} out of 4 voted.`);
             message.channel.send('No se escribio una respuesta.');
         });
     });
-};
+}
+exports.question = question;

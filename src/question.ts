@@ -1,6 +1,6 @@
 import { Message } from "discord.js";
 
-module.exports = (message:Message, question:string, callback:Function) => {
+export function question(message: Message, question: string, callback: (answer:Message) => void)  {
     const user = message.author;
     let answer:Message;
     message.channel.send(question)

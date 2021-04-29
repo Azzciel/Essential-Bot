@@ -1,13 +1,16 @@
 {
+  "engines": {
+    "node": ">=14.0.0",
+    "npm": ">=6.0.0"
+  },
   "name": "discord",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node ./src/bot.js",
     "dev": "nodemon ./src/bot.js",
-    "tsc": "tsc ./src/*.ts"
+    "tsc": "tsc"
   },
   "keywords": [],
   "author": "",

@@ -1,19 +1,22 @@
 "use strict";
-exports.__esModule = true;
-var numberTickets = 0;
-var createTicket = function (message, user, roles) {
-    var oldChannel = message.channel;
-    createChannel(message, "ticket " + numberTickets, function (channel) {
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.createChannel = exports.createTicket2 = void 0;
+let numberTickets = 0;
+const createTicket2 = (message, user, roles) => {
+    const oldChannel = message.channel;
+    exports.createChannel(message, `ticket ${numberTickets}`, (channel) => {
         numberTickets++;
-        var str = '';
-        roles.each(function (rol) {
-            str += "" + rol;
+        let str = '';
+        roles.each((rol) => {
+            str += `${rol}`;
         });
-        channel.send(user + " viene del canal: " + oldChannel + " \n" + str); //escribe el nombre del canal del ticket en el nuevo canal
+        channel.send(`${user} viene del canal: ${oldChannel} \n${str}`); //escribe el nombre del canal del ticket en el nuevo canal
     });
 };
-var createChannel = function (message, name, callback) {
+exports.createTicket2 = createTicket2;
+const createChannel = (message, name, callback) => {
     message.guild.channels.create(name)
-        .then(function (channel) { return callback(channel); })["catch"](function (err) { return console.log(err); });
+        .then((channel) => callback(channel))
+        .catch(err => console.log(err));
 };
-exports["default"] = createTicket;
+exports.createChannel = createChannel;

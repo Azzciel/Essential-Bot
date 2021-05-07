@@ -1,19 +1,36 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.createChannel = exports.createTicket2 = void 0;
+exports.createChannel = exports.createTicket = void 0;
+const bot_1 = require("./bot");
 let numberTickets = 0;
-const createTicket2 = (message, user, roles) => {
+let categoryId;
+const createTicket = (message, user, roles) => {
     const oldChannel = message.channel;
+    // if (!message.guild.channels.cache.find(c => c.name == 'Tickets' && c.type == 'category')) {
+    //     message.guild.channels.create('Tickets', { type: 'category' }).then(msg => categoryId = msg.id)
+    // } else {
+    //     categoryId = message.guild.channels.cache.find(c => c.name == 'Tickets' && c.type == 'category').id
+    // }
+    try {
+        categoryId = message.guild.channels.cache.find(c => c.name == 'Tickets' && c.type == 'category').id;
+    }
+    catch (error) {
+        message.guild.channels.create('Tickets', { type: 'category' }).then(msg => categoryId = msg.id);
+    }
     exports.createChannel(message, `ticket ${numberTickets}`, (channel) => {
+        channel.setParent(categoryId);
         numberTickets++;
         let str = '';
         roles.each((rol) => {
             str += `${rol}`;
         });
-        channel.send(`${user} viene del canal: ${oldChannel} \n${str}`); //escribe el nombre del canal del ticket en el nuevo canal
+        const title = `ticket ${numberTickets - 1}`;
+        const description = `${user} viene del canal: ${oldChannel} \n${str}`;
+        //channel.send(`${user} viene del canal: ${oldChannel} \n${str}`);//escribe el nombre del canal del ticket en el nuevo canal
+        channel.send(bot_1.embedMessage(title, description, '').setFooter(str));
     });
 };
-exports.createTicket2 = createTicket2;
+exports.createTicket = createTicket;
 const createChannel = (message, name, callback) => {
     message.guild.channels.create(name)
         .then((channel) => callback(channel))

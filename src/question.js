@@ -11,7 +11,7 @@ function question(message, question, callback) {
             .then(collected => {
             answer = collected.first();
             callback(answer);
-            message.delete({ timeout: 5000 });
+            message.delete({ timeout: 800 });
         })
             .catch(collected => {
             console.log(`After a minute, only ${collected.size} out of 4 voted.`);

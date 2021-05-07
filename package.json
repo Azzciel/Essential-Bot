@@ -10,18 +10,22 @@
   "scripts": {
     "start": "node ./src/bot.js",
     "dev": "nodemon ./src/bot.js",
-    "tsc": "tsc"
+    "tsc": "tsc && node ./src/bot.js"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
     "discord.js": "^12.5.3",
+    "discord.js-commando": "^0.12.3",
     "dotenv": "^8.2.0",
+    "mongodb": "^3.6.6",
+    "mongoose": "^5.12.7",
     "nodemon": "^2.0.7",
     "typescript": "^4.2.4"
   },
   "devDependencies": {
+    "@types/mongodb": "^3.6.12",
     "@types/node": "^15.0.1"
   }
 }

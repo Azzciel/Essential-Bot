@@ -262,7 +262,7 @@ client.on('messageReactionAdd', (reaction, user) => __awaiter(void 0, void 0, vo
             .setTitle(`Ticket #${'0'.repeat(4 - data.TicketNumber.toString().length)}${data.TicketNumber}`)
             .setDescription(`This ticket was created by ${user.toString()}y viene del canal ${oldChannel}. Please say \`done\` when you're finished.`)
             .setColor('BLUE');
-        let successMsg = yield channel.send(`${user.toString()}, ${data.WhitelistedRole}`, successEmbed);
+        let successMsg = yield channel.send(`${user.toString()}, ${channel.guild.roles.cache.get(data.WhitelistedRole)} `, successEmbed);
         yield cooldown.add(user.id);
         yield checkIfClose(client, reaction, user, successMsg, channel);
         setTimeout(function () {
@@ -275,7 +275,7 @@ function checkIfClose(bot, reaction, user, successMsg, channel) {
         const filter = (m) => m.content.toLowerCase() === 'done';
         const collector = new discord_js_1.MessageCollector(channel, filter);
         collector.on('collect', (msg) => __awaiter(this, void 0, void 0, function* () {
-            channel.send(`This channel will be deleted in **10** seconds.`);
+            channel.send(`This channel will be deleted in ** 10 ** seconds.`);
             yield collector.stop();
             setTimeout(function () {
                 channel.delete();

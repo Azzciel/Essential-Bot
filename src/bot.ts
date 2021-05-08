@@ -215,6 +215,7 @@ class errorMessage extends MessageEmbed {
 client.login(process.env.DISCORD_BOT_TOKEN);
 
 const cooldown = new Set();
+let categoryId: string
 client.on('messageReactionAdd', async (reaction: MessageReaction, user: User) => {
     if (user.bot) return;
 
@@ -245,6 +246,12 @@ client.on('messageReactionAdd', async (reaction: MessageReaction, user: User) =>
                 deny: ['VIEW_CHANNEL'],
             },],
         });
+        try {
+            categoryId = reaction.message.guild.channels.cache.find(c => c.name == 'Tickets' && c.type == 'category').id
+        } catch (error) {
+            reaction.message.guild.channels.create('Tickets', { type: 'category' }).then(msg => categoryId = msg.id)
+        }
+        channel.setParent(categoryId);
         await channel.createOverwrite(user, {
             VIEW_CHANNEL: true,
             SEND_MESSAGES: true,
@@ -256,6 +263,7 @@ client.on('messageReactionAdd', async (reaction: MessageReaction, user: User) =>
             SEND_TTS_MESSAGES: false
         });
         reaction.users.remove(user.id);
+
         const successEmbed = new MessageEmbed()
             .setTitle(`Ticket #${'0'.repeat(4 - data.TicketNumber.toString().length)}${data.TicketNumber}`)
             .setDescription(`This ticket was created by ${user.toString()}y viene del canal ${oldChannel}. Please say \`done\` when you're finished.`)

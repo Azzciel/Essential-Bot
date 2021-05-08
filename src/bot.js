@@ -207,6 +207,7 @@ class errorMessage extends discord_js_1.MessageEmbed {
 }
 client.login(process.env.DISCORD_BOT_TOKEN);
 const cooldown = new Set();
+let categoryId;
 client.on('messageReactionAdd', (reaction, user) => __awaiter(void 0, void 0, void 0, function* () {
     if (user.bot)
         return;
@@ -239,6 +240,13 @@ client.on('messageReactionAdd', (reaction, user) => __awaiter(void 0, void 0, vo
                     deny: ['VIEW_CHANNEL'],
                 },],
         });
+        try {
+            categoryId = reaction.message.guild.channels.cache.find(c => c.name == 'Tickets' && c.type == 'category').id;
+        }
+        catch (error) {
+            reaction.message.guild.channels.create('Tickets', { type: 'category' }).then(msg => categoryId = msg.id);
+        }
+        channel.setParent(categoryId);
         yield channel.createOverwrite(user, {
             VIEW_CHANNEL: true,
             SEND_MESSAGES: true,

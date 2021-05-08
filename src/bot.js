@@ -68,7 +68,7 @@ commands_js_1.command(client, 'prefix', (message, args) => __awaiter(void 0, voi
     });
     newData.save();
 }));
-commands_js_1.command(client, 'ticket', (message, args) => {
+commands_js_1.command(client, 'test', (message, args) => {
     if (!message.member.permissions.has('ADMINISTRATOR'))
         return;
     question_js_1.question(message, 'Ticket title?', (answer) => {
@@ -118,7 +118,7 @@ function deleteChannels(guild, name) {
         }
     });
 }
-commands_js_1.command(client, 'test', (message, args) => __awaiter(void 0, void 0, void 0, function* () {
+commands_js_1.command(client, 'ticket', (message, args) => __awaiter(void 0, void 0, void 0, function* () {
     let ticket = yield Ticket_js_1.Ticket.findOne({ GuildID: message.guild.id });
     if (!message.member.hasPermission('MANAGE_GUILD')) {
         return message.channel.send('You are missing permissions! You must have the **MANAGE_SERVER** permission.');
@@ -262,7 +262,7 @@ client.on('messageReactionAdd', (reaction, user) => __awaiter(void 0, void 0, vo
             .setTitle(`Ticket #${'0'.repeat(4 - data.TicketNumber.toString().length)}${data.TicketNumber}`)
             .setDescription(`This ticket was created by ${user.toString()}y viene del canal ${oldChannel}. Please say \`done\` when you're finished.`)
             .setColor('BLUE');
-        let successMsg = yield channel.send(`${user.toString()}`, successEmbed);
+        let successMsg = yield channel.send(`${user.toString()}, ${data.WhitelistedRole}`, successEmbed);
         yield cooldown.add(user.id);
         yield checkIfClose(client, reaction, user, successMsg, channel);
         setTimeout(function () {

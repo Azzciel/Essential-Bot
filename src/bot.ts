@@ -60,7 +60,7 @@ command(client, 'prefix', async (message: Message, args: string[]) => {
 
 })
 
-command(client, 'ticket', (message: Message, args: string[]) => {
+command(client, 'test', (message: Message, args: string[]) => {
     if (!message.member.permissions.has('ADMINISTRATOR')) return;
     question(message, 'Ticket title?', (answer) => {//Titulo
         const titulo = answer.content;
@@ -110,7 +110,7 @@ function deleteChannels(guild: Guild, name: string) {
     })
 }
 
-command(client, 'test', async (message, args) => {
+command(client, 'ticket', async (message, args) => {
     let ticket = await Ticket.findOne({ GuildID: message.guild.id });
     if (!message.member.hasPermission('MANAGE_GUILD')) {
         return message.channel.send('You are missing permissions! You must have the **MANAGE_SERVER** permission.');
@@ -268,7 +268,7 @@ client.on('messageReactionAdd', async (reaction: MessageReaction, user: User) =>
             .setTitle(`Ticket #${'0'.repeat(4 - data.TicketNumber.toString().length)}${data.TicketNumber}`)
             .setDescription(`This ticket was created by ${user.toString()}y viene del canal ${oldChannel}. Please say \`done\` when you're finished.`)
             .setColor('BLUE');
-        let successMsg = await channel.send(`${user.toString()}`, successEmbed);
+        let successMsg = await channel.send(`${user.toString()}, ${data.WhitelistedRole}`, successEmbed);
         await cooldown.add(user.id);
         await checkIfClose(client, reaction, user, successMsg, channel);
         setTimeout(function () {

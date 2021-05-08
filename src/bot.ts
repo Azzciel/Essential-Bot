@@ -1,7 +1,7 @@
 require('dotenv').config();
 require('./conexion')
 require('./ticketSystem')
-import { Client, User, Message, Guild, MessageEmbed, CollectorFilter, Channel, TextChannel, MessageCollector, Role, MessageReaction } from 'discord.js';
+import { Client, User, Message, Guild, MessageEmbed, CollectorFilter, Channel, TextChannel, MessageCollector, Role, MessageReaction, MessageMentions, RoleManager } from 'discord.js';
 import { command } from './commands.js'
 import { question } from './question.js'
 import { createTicket } from './ticket.js'
@@ -268,7 +268,7 @@ client.on('messageReactionAdd', async (reaction: MessageReaction, user: User) =>
             .setTitle(`Ticket #${'0'.repeat(4 - data.TicketNumber.toString().length)}${data.TicketNumber}`)
             .setDescription(`This ticket was created by ${user.toString()}y viene del canal ${oldChannel}. Please say \`done\` when you're finished.`)
             .setColor('BLUE');
-        let successMsg = await channel.send(`${user.toString()}, ${data.WhitelistedRole}`, successEmbed);
+        let successMsg = await channel.send(`${user.toString()}, ${channel.guild.roles.cache.get(data.WhitelistedRole)} `, successEmbed);
         await cooldown.add(user.id);
         await checkIfClose(client, reaction, user, successMsg, channel);
         setTimeout(function () {
@@ -282,7 +282,7 @@ async function checkIfClose(bot: Client, reaction: MessageReaction, user: User, 
     const collector = new MessageCollector(channel, filter);
 
     collector.on('collect', async msg => {
-        channel.send(`This channel will be deleted in **10** seconds.`);
+        channel.send(`This channel will be deleted in ** 10 ** seconds.`);
         await collector.stop();
         setTimeout(function () {
             channel.delete();

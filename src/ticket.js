@@ -27,7 +27,8 @@ const createTicket = (message, user, roles) => {
         const title = `ticket ${numberTickets - 1}`;
         const description = `${user} viene del canal: ${oldChannel} \n${str}`;
         //channel.send(`${user} viene del canal: ${oldChannel} \n${str}`);//escribe el nombre del canal del ticket en el nuevo canal
-        channel.send(bot_1.embedMessage(title, description, '').setFooter(str));
+        channel.send(str);
+        channel.send(bot_1.embedMessage(title, description));
     });
 };
 exports.createTicket = createTicket;

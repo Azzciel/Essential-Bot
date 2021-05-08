@@ -25,7 +25,8 @@ export const createTicket = (message: Message, user: User | PartialUser, roles: 
         const description = `${user} viene del canal: ${oldChannel} \n${str}`
 
         //channel.send(`${user} viene del canal: ${oldChannel} \n${str}`);//escribe el nombre del canal del ticket en el nuevo canal
-        channel.send(embedMessage(title, description, '').setFooter(str))
+        channel.send(str)
+        channel.send(embedMessage(title, description))
     })
 }
 export const createChannel = (message: Message, name: string, callback: Function) => {

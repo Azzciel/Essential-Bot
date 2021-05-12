@@ -115,75 +115,80 @@ command(client, 'ticket', async (message, args) => {
     if (!message.member.hasPermission('MANAGE_GUILD')) {
         return message.channel.send('You are missing permissions! You must have the **MANAGE_SERVER** permission.');
     }
+    //ticket.MessageID
+    //if (!ticket) {
+    const firstEmbed = new MessageEmbed()
+        .setTitle('Ticket System Setup')
+        .setDescription('What do you want the embed description to be?')
+        .setColor('BLUE');
+    let firstMsg = await message.channel.send(firstEmbed);
 
-    if (!ticket) {
-        const firstEmbed = new MessageEmbed()
+    const firstFilter = (m: Message) => m.author.id === message.author.id;
+    const firstCollector = new MessageCollector(<TextChannel>message.channel, firstFilter, { max: 2 });
+
+    let embedDescription: string;
+
+    firstCollector.on('collect', async msg => {
+        embedDescription = msg.content;
+        const secondEmbed = new MessageEmbed()
             .setTitle('Ticket System Setup')
-            .setDescription('What do you want the embed description to be?')
+            .setDescription('Where do you want to send the message? Please mention a channel.')
             .setColor('BLUE');
-        let firstMsg = await message.channel.send(firstEmbed);
+        msg.channel.send(secondEmbed);
+        firstCollector.stop();
 
-        const firstFilter = (m: Message) => m.author.id === message.author.id;
-        const firstCollector = new MessageCollector(<TextChannel>message.channel, firstFilter, { max: 2 });
+        const secondFilter = (m: Message) => m.author.id === message.author.id;
+        const secondCollector = new MessageCollector(<TextChannel>message.channel, secondFilter, { max: 2 });
 
-        let embedDescription: string;
+        secondCollector.on('collect', async msg => {
+            let embedChannel: TextChannel = msg.mentions.channels.first();
+            if (!embedChannel) {
+                msg.channel.send('That is not a valid channel! Please try again.');
+                secondCollector.stop();
+                return;
+            }
 
-        firstCollector.on('collect', async msg => {
-            embedDescription = msg.content;
-            const secondEmbed = new MessageEmbed()
+            const thirdEmbed = new MessageEmbed()
                 .setTitle('Ticket System Setup')
-                .setDescription('Where do you want to send the message? Please mention a channel.')
+                .setDescription('What roles do you want to have access to see tickets? Please provide a role name, mention, or ID.')
                 .setColor('BLUE');
-            msg.channel.send(secondEmbed);
-            firstCollector.stop();
+            msg.channel.send(thirdEmbed);
+            secondCollector.stop();
 
-            const secondFilter = (m: Message) => m.author.id === message.author.id;
-            const secondCollector = new MessageCollector(<TextChannel>message.channel, secondFilter, { max: 2 });
+            const thirdFilter = (m: Message) => m.author.id === message.author.id;
+            const thirdCollector = new MessageCollector(<TextChannel>message.channel, thirdFilter, { max: 2 });
 
-            secondCollector.on('collect', async msg => {
-                let embedChannel: TextChannel = msg.mentions.channels.first();
-                if (!embedChannel) {
-                    msg.channel.send('That is not a valid channel! Please try again.');
-                    secondCollector.stop();
+            thirdCollector.on('collect', async (message: Message) => {
+                let savedRole: Role = message.mentions.roles.first() || message.guild.roles.cache.get(message.content) || message.guild.roles.cache.find((role: Role) => role.name.toLowerCase() === message.content.toLowerCase());
+
+                if (!savedRole) {
+                    msg.channel.send('That is not a valid role! Please try again.');
+                    thirdCollector.stop();
                     return;
                 }
 
-                const thirdEmbed = new MessageEmbed()
+                const fourthEmbed = new MessageEmbed()
                     .setTitle('Ticket System Setup')
-                    .setDescription('What roles do you want to have access to see tickets? Please provide a role name, mention, or ID.')
+                    .setDescription('The setup is now finished!')
                     .setColor('BLUE');
-                msg.channel.send(thirdEmbed);
-                secondCollector.stop();
+                await msg.channel.send(fourthEmbed);
+                thirdCollector.stop();
 
-                const thirdFilter = (m: Message) => m.author.id === message.author.id;
-                const thirdCollector = new MessageCollector(<TextChannel>message.channel, thirdFilter, { max: 2 });
-
-                thirdCollector.on('collect', async (message: Message) => {
-                    let savedRole: Role = message.mentions.roles.first() || message.guild.roles.cache.get(message.content) || message.guild.roles.cache.find((role: Role) => role.name.toLowerCase() === message.content.toLowerCase());
-
-                    if (!savedRole) {
-                        msg.channel.send('That is not a valid role! Please try again.');
-                        thirdCollector.stop();
-                        return;
-                    }
-
-                    const fourthEmbed = new MessageEmbed()
-                        .setTitle('Ticket System Setup')
-                        .setDescription('The setup is now finished!')
-                        .setColor('BLUE');
-                    await msg.channel.send(fourthEmbed);
-                    thirdCollector.stop();
-
-                    await createTicketSystem(ticket, embedDescription, embedChannel, message, savedRole).catch(err => { console.log(err) })
-                });
+                await createTicketSystem(ticket, embedDescription, embedChannel, message, savedRole).catch(err => { console.log(err) })
             });
         });
-    } else {
-        await Ticket.findOneAndRemove({
-            GuildID: message.guild.id
-        });
-        message.channel.send(`**Successfuly Reset the Ticket System on your Server!**\npls use this command again to re-setup!`);
+    });
+    try {
+        categoryId = message.guild.channels.cache.find(c => c.name == 'Tickets' && c.type == 'category').id
+    } catch (error) {
+        message.guild.channels.create('Tickets', { type: 'category' }).then(msg => categoryId = msg.id);
     }
+    // } else {
+    //     await Ticket.findOneAndRemove({
+    //         GuildID: message.guild.id
+    //     });
+    //     message.channel.send(`**Successfuly Reset the Ticket System on your Server!**\npls use this command again to re-setup!`);
+    // }
 })
 
 const createTicketSystem = async (ticket: ITicket, embedDescription: string, embedChannel: TextChannel, message: Message, savedRole: Role) => {
@@ -202,6 +207,11 @@ const createTicketSystem = async (ticket: ITicket, embedDescription: string, emb
         WhitelistedRole: savedRole.id
     });
     newData.save();
+
+    await message.guild.channels.cache.get(categoryId).overwritePermissions([{
+        id: message.guild.id,
+        deny: ['VIEW_CHANNEL']
+    }])
 }
 
 class errorMessage extends MessageEmbed {
@@ -225,7 +235,8 @@ client.on('messageReactionAdd', async (reaction: MessageReaction, user: User) =>
     if (!reaction.message.guild) return;
 
     const data: ITicket = await Ticket.findOne({
-        GuildID: reaction.message.guild.id
+        GuildID: reaction.message.guild.id,
+        MessageID: reaction.message.id
     });
     if (!data) return;
     if (reaction.message.partial) await reaction.message.fetch();
@@ -246,12 +257,7 @@ client.on('messageReactionAdd', async (reaction: MessageReaction, user: User) =>
                 deny: ['VIEW_CHANNEL'],
             },],
         });
-        try {
-            categoryId = reaction.message.guild.channels.cache.find(c => c.name == 'Tickets' && c.type == 'category').id
-        } catch (error) {
-            reaction.message.guild.channels.create('Tickets', { type: 'category' }).then(msg => categoryId = msg.id)
-        }
-        channel.setParent(categoryId);
+        await channel.setParent(categoryId);
         await channel.createOverwrite(user, {
             VIEW_CHANNEL: true,
             SEND_MESSAGES: true,
@@ -266,11 +272,12 @@ client.on('messageReactionAdd', async (reaction: MessageReaction, user: User) =>
 
         const successEmbed = new MessageEmbed()
             .setTitle(`Ticket #${'0'.repeat(4 - data.TicketNumber.toString().length)}${data.TicketNumber}`)
-            .setDescription(`This ticket was created by ${user.toString()}y viene del canal ${oldChannel}. Please say \`done\` when you're finished.`)
+            .setDescription(`This ticket was created by ${user.toString()} y viene del canal ${oldChannel}. Please say \`done\` when you're finished.`)
             .setColor('BLUE');
         let successMsg = await channel.send(`${user.toString()}, ${channel.guild.roles.cache.get(data.WhitelistedRole)} `, successEmbed);
         await cooldown.add(user.id);
         await checkIfClose(client, reaction, user, successMsg, channel);
+        await checkIfTake(user, channel);
         setTimeout(function () {
             cooldown.delete(user.id);
         }, 300000);
@@ -288,4 +295,16 @@ async function checkIfClose(bot: Client, reaction: MessageReaction, user: User, 
             channel.delete();
         }, 10000);
     });
+}
+async function checkIfTake(user: User, channel: TextChannel) {
+    const filter = (m: Message) => m.content.toLowerCase() === 'take'
+    const collector = new MessageCollector(channel, filter);
+
+    collector.on('collect', async (msg: Message) => {
+        if (msg.author !== user) {
+            channel.send(`This ticket was taken by : ${msg.author}`);
+            await collector.stop();
+            channel.setName(`${channel.name} take by : ${msg.author.tag}`)
+        }
+    })
 }

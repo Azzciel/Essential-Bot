@@ -123,64 +123,70 @@ commands_js_1.command(client, 'ticket', (message, args) => __awaiter(void 0, voi
     if (!message.member.hasPermission('MANAGE_GUILD')) {
         return message.channel.send('You are missing permissions! You must have the **MANAGE_SERVER** permission.');
     }
-    if (!ticket) {
-        const firstEmbed = new discord_js_1.MessageEmbed()
+    //ticket.MessageID
+    //if (!ticket) {
+    const firstEmbed = new discord_js_1.MessageEmbed()
+        .setTitle('Ticket System Setup')
+        .setDescription('What do you want the embed description to be?')
+        .setColor('BLUE');
+    let firstMsg = yield message.channel.send(firstEmbed);
+    const firstFilter = (m) => m.author.id === message.author.id;
+    const firstCollector = new discord_js_1.MessageCollector(message.channel, firstFilter, { max: 2 });
+    let embedDescription;
+    firstCollector.on('collect', (msg) => __awaiter(void 0, void 0, void 0, function* () {
+        embedDescription = msg.content;
+        const secondEmbed = new discord_js_1.MessageEmbed()
             .setTitle('Ticket System Setup')
-            .setDescription('What do you want the embed description to be?')
+            .setDescription('Where do you want to send the message? Please mention a channel.')
             .setColor('BLUE');
-        let firstMsg = yield message.channel.send(firstEmbed);
-        const firstFilter = (m) => m.author.id === message.author.id;
-        const firstCollector = new discord_js_1.MessageCollector(message.channel, firstFilter, { max: 2 });
-        let embedDescription;
-        firstCollector.on('collect', (msg) => __awaiter(void 0, void 0, void 0, function* () {
-            embedDescription = msg.content;
-            const secondEmbed = new discord_js_1.MessageEmbed()
+        msg.channel.send(secondEmbed);
+        firstCollector.stop();
+        const secondFilter = (m) => m.author.id === message.author.id;
+        const secondCollector = new discord_js_1.MessageCollector(message.channel, secondFilter, { max: 2 });
+        secondCollector.on('collect', (msg) => __awaiter(void 0, void 0, void 0, function* () {
+            let embedChannel = msg.mentions.channels.first();
+            if (!embedChannel) {
+                msg.channel.send('That is not a valid channel! Please try again.');
+                secondCollector.stop();
+                return;
+            }
+            const thirdEmbed = new discord_js_1.MessageEmbed()
                 .setTitle('Ticket System Setup')
-                .setDescription('Where do you want to send the message? Please mention a channel.')
+                .setDescription('What roles do you want to have access to see tickets? Please provide a role name, mention, or ID.')
                 .setColor('BLUE');
-            msg.channel.send(secondEmbed);
-            firstCollector.stop();
-            const secondFilter = (m) => m.author.id === message.author.id;
-            const secondCollector = new discord_js_1.MessageCollector(message.channel, secondFilter, { max: 2 });
-            secondCollector.on('collect', (msg) => __awaiter(void 0, void 0, void 0, function* () {
-                let embedChannel = msg.mentions.channels.first();
-                if (!embedChannel) {
-                    msg.channel.send('That is not a valid channel! Please try again.');
-                    secondCollector.stop();
+            msg.channel.send(thirdEmbed);
+            secondCollector.stop();
+            const thirdFilter = (m) => m.author.id === message.author.id;
+            const thirdCollector = new discord_js_1.MessageCollector(message.channel, thirdFilter, { max: 2 });
+            thirdCollector.on('collect', (message) => __awaiter(void 0, void 0, void 0, function* () {
+                let savedRole = message.mentions.roles.first() || message.guild.roles.cache.get(message.content) || message.guild.roles.cache.find((role) => role.name.toLowerCase() === message.content.toLowerCase());
+                if (!savedRole) {
+                    msg.channel.send('That is not a valid role! Please try again.');
+                    thirdCollector.stop();
                     return;
                 }
-                const thirdEmbed = new discord_js_1.MessageEmbed()
+                const fourthEmbed = new discord_js_1.MessageEmbed()
                     .setTitle('Ticket System Setup')
-                    .setDescription('What roles do you want to have access to see tickets? Please provide a role name, mention, or ID.')
+                    .setDescription('The setup is now finished!')
                     .setColor('BLUE');
-                msg.channel.send(thirdEmbed);
-                secondCollector.stop();
-                const thirdFilter = (m) => m.author.id === message.author.id;
-                const thirdCollector = new discord_js_1.MessageCollector(message.channel, thirdFilter, { max: 2 });
-                thirdCollector.on('collect', (message) => __awaiter(void 0, void 0, void 0, function* () {
-                    let savedRole = message.mentions.roles.first() || message.guild.roles.cache.get(message.content) || message.guild.roles.cache.find((role) => role.name.toLowerCase() === message.content.toLowerCase());
-                    if (!savedRole) {
-                        msg.channel.send('That is not a valid role! Please try again.');
-                        thirdCollector.stop();
-                        return;
-                    }
-                    const fourthEmbed = new discord_js_1.MessageEmbed()
-                        .setTitle('Ticket System Setup')
-                        .setDescription('The setup is now finished!')
-                        .setColor('BLUE');
-                    yield msg.channel.send(fourthEmbed);
-                    thirdCollector.stop();
-                    yield createTicketSystem(ticket, embedDescription, embedChannel, message, savedRole).catch(err => { console.log(err); });
-                }));
+                yield msg.channel.send(fourthEmbed);
+                thirdCollector.stop();
+                yield createTicketSystem(ticket, embedDescription, embedChannel, message, savedRole).catch(err => { console.log(err); });
             }));
         }));
+    }));
+    try {
+        categoryId = message.guild.channels.cache.find(c => c.name == 'Tickets' && c.type == 'category').id;
     }
-    else {
-        yield Ticket_js_1.Ticket.findOneAndRemove({
-            GuildID: message.guild.id
-        });
-        message.channel.send(`**Successfuly Reset the Ticket System on your Server!**\npls use this command again to re-setup!`);
+    catch (error) {
+        message.guild.channels.create('Tickets', { type: 'category' }).then(msg => categoryId = msg.id);
     }
+    // } else {
+    //     await Ticket.findOneAndRemove({
+    //         GuildID: message.guild.id
+    //     });
+    //     message.channel.send(`**Successfuly Reset the Ticket System on your Server!**\npls use this command again to re-setup!`);
+    // }
 }));
 const createTicketSystem = (ticket, embedDescription, embedChannel, message, savedRole) => __awaiter(void 0, void 0, void 0, function* () {
     const sendEmbed = new discord_js_1.MessageEmbed()
@@ -196,6 +202,10 @@ const createTicketSystem = (ticket, embedDescription, embedChannel, message, sav
         WhitelistedRole: savedRole.id
     });
     newData.save();
+    yield message.guild.channels.cache.get(categoryId).overwritePermissions([{
+            id: message.guild.id,
+            deny: ['VIEW_CHANNEL']
+        }]);
 });
 class errorMessage extends discord_js_1.MessageEmbed {
     constructor() {
@@ -218,7 +228,8 @@ client.on('messageReactionAdd', (reaction, user) => __awaiter(void 0, void 0, vo
     if (!reaction.message.guild)
         return;
     const data = yield Ticket_js_1.Ticket.findOne({
-        GuildID: reaction.message.guild.id
+        GuildID: reaction.message.guild.id,
+        MessageID: reaction.message.id
     });
     if (!data)
         return;
@@ -240,13 +251,7 @@ client.on('messageReactionAdd', (reaction, user) => __awaiter(void 0, void 0, vo
                     deny: ['VIEW_CHANNEL'],
                 },],
         });
-        try {
-            categoryId = reaction.message.guild.channels.cache.find(c => c.name == 'Tickets' && c.type == 'category').id;
-        }
-        catch (error) {
-            reaction.message.guild.channels.create('Tickets', { type: 'category' }).then(msg => categoryId = msg.id);
-        }
-        channel.setParent(categoryId);
+        yield channel.setParent(categoryId);
         yield channel.createOverwrite(user, {
             VIEW_CHANNEL: true,
             SEND_MESSAGES: true,
@@ -260,11 +265,12 @@ client.on('messageReactionAdd', (reaction, user) => __awaiter(void 0, void 0, vo
         reaction.users.remove(user.id);
         const successEmbed = new discord_js_1.MessageEmbed()
             .setTitle(`Ticket #${'0'.repeat(4 - data.TicketNumber.toString().length)}${data.TicketNumber}`)
-            .setDescription(`This ticket was created by ${user.toString()}y viene del canal ${oldChannel}. Please say \`done\` when you're finished.`)
+            .setDescription(`This ticket was created by ${user.toString()} y viene del canal ${oldChannel}. Please say \`done\` when you're finished.`)
             .setColor('BLUE');
         let successMsg = yield channel.send(`${user.toString()}, ${channel.guild.roles.cache.get(data.WhitelistedRole)} `, successEmbed);
         yield cooldown.add(user.id);
         yield checkIfClose(client, reaction, user, successMsg, channel);
+        yield checkIfTake(user, channel);
         setTimeout(function () {
             cooldown.delete(user.id);
         }, 300000);
@@ -280,6 +286,19 @@ function checkIfClose(bot, reaction, user, successMsg, channel) {
             setTimeout(function () {
                 channel.delete();
             }, 10000);
+        }));
+    });
+}
+function checkIfTake(user, channel) {
+    return __awaiter(this, void 0, void 0, function* () {
+        const filter = (m) => m.content.toLowerCase() === 'take';
+        const collector = new discord_js_1.MessageCollector(channel, filter);
+        collector.on('collect', (msg) => __awaiter(this, void 0, void 0, function* () {
+            if (msg.author !== user) {
+                channel.send(`This ticket was taken by : ${msg.author}`);
+                yield collector.stop();
+                channel.setName(`${channel.name} take by : ${msg.author.tag}`);
+            }
         }));
     });
 }

@@ -10,7 +10,8 @@
   "scripts": {
     "start": "node ./src/bot.js",
     "dev": "nodemon ./src/bot.js",
-    "tsc": "tsc && node ./src/bot.js"
+    "test": "tsc && node ./src/bot.js",
+    "tsc":"tsc"
   },
   "keywords": [],
   "author": "",

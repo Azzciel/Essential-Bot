@@ -1,43 +1,28 @@
 require('dotenv').config();
 require('./conexion')
 require('./ticketSystem')
-import { Client, User, Message, Guild, MessageEmbed, CollectorFilter, Channel, TextChannel, MessageCollector, Role, MessageReaction, MessageMentions, RoleManager } from 'discord.js';
+import { Client, User, Message, Guild, MessageEmbed, TextChannel, MessageCollector, Role, MessageReaction, Collection } from 'discord.js';
 import { command } from './commands.js'
 import { question } from './question.js'
 import { createTicket } from './ticket.js'
 import { Prefix, IPrefix } from './models/prefix'
 import { ITicket, Ticket } from './models/Ticket.js';
-const client = new Client({
+export const client = new Client({
     partials: ['MESSAGE', 'REACTION']
 });
+import event_handler from './handlers/event_handler'
+import command_handler from './handlers/command_handler'
+command_handler(client)
+event_handler(client)
 
 
-client.on('ready', () => {
-    console.log(`${client.user.username} has logged in.`);
-});
+let categoryId: string
 
-command(client, 'kick', (message, args) => {
-    if (!message.member.hasPermission('KICK_MEMBERS')) return;
-    if (args.length === 0) return message.reply('ID required.');
-    const member = message.guild.members.cache.get(args[0]);
-    if (member) {
-        member.kick()
-            .then((member) => message.channel.send('The user was kicked.'))
-            .catch((err) => message.channel.send('I cannor kick that user.'));
-    } else {
-        message.channel.send('That member was not found.');
-    }
-})
 
 command(client, 'clear', (message: Message, args: string[]) => {
-    deleteChannels(message.guild, 'ticket');
-})
-
-command(client, 'invite', (message, args) => {
-    message.channel.send(embedMessage('Agregame a tu servidor.', 'Sistema de gestion de tickets de Essential', '#A311E2')
-        .setURL('https://discord.com/oauth2/authorize?client_id=760353718699819049&scope=bot&permissions=8')
-        .setThumbnail(client.user.avatarURL())
-    )
+    if (message.author.tag === 'Azzciel#3306') {
+        deleteChannels(message.guild, 'ticket');
+    }
 })
 
 command(client, 'prefix', async (message: Message, args: string[]) => {
@@ -223,9 +208,7 @@ class errorMessage extends MessageEmbed {
     }
 }
 client.login(process.env.DISCORD_BOT_TOKEN);
-
 const cooldown = new Set();
-let categoryId: string
 client.on('messageReactionAdd', async (reaction: MessageReaction, user: User) => {
     if (user.bot) return;
 
@@ -272,7 +255,7 @@ client.on('messageReactionAdd', async (reaction: MessageReaction, user: User) =>
 
         const successEmbed = new MessageEmbed()
             .setTitle(`Ticket #${'0'.repeat(4 - data.TicketNumber.toString().length)}${data.TicketNumber}`)
-            .setDescription(`This ticket was created by ${user.toString()} y viene del canal ${oldChannel}. Please say \`done\` when you're finished.`)
+            .setDescription(`This ticket was created by ${user.toString()} y viene del canal ${oldChannel}.Say \`take \` to take this ticket.\n Please say \`done\` when you're finished.`)
             .setColor('BLUE');
         let successMsg = await channel.send(`${user.toString()}, ${channel.guild.roles.cache.get(data.WhitelistedRole)} `, successEmbed);
         await cooldown.add(user.id);

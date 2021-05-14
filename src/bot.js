@@ -9,7 +9,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.embedMessage = void 0;
+exports.embedMessage = exports.client = void 0;
 require('dotenv').config();
 require('./conexion');
 require('./ticketSystem');
@@ -19,36 +19,20 @@ const question_js_1 = require("./question.js");
 const ticket_js_1 = require("./ticket.js");
 const prefix_1 = require("./models/prefix");
 const Ticket_js_1 = require("./models/Ticket.js");
-const client = new discord_js_1.Client({
+exports.client = new discord_js_1.Client({
     partials: ['MESSAGE', 'REACTION']
 });
-client.on('ready', () => {
-    console.log(`${client.user.username} has logged in.`);
-});
-commands_js_1.command(client, 'kick', (message, args) => {
-    if (!message.member.hasPermission('KICK_MEMBERS'))
-        return;
-    if (args.length === 0)
-        return message.reply('ID required.');
-    const member = message.guild.members.cache.get(args[0]);
-    if (member) {
-        member.kick()
-            .then((member) => message.channel.send('The user was kicked.'))
-            .catch((err) => message.channel.send('I cannor kick that user.'));
-    }
-    else {
-        message.channel.send('That member was not found.');
+const event_handler_1 = require("./handlers/event_handler");
+const command_handler_1 = require("./handlers/command_handler");
+command_handler_1.default(exports.client);
+event_handler_1.default(exports.client);
+let categoryId;
+commands_js_1.command(exports.client, 'clear', (message, args) => {
+    if (message.author.tag === 'Azzciel#3306') {
+        deleteChannels(message.guild, 'ticket');
     }
 });
-commands_js_1.command(client, 'clear', (message, args) => {
-    deleteChannels(message.guild, 'ticket');
-});
-commands_js_1.command(client, 'invite', (message, args) => {
-    message.channel.send(exports.embedMessage('Agregame a tu servidor.', 'Sistema de gestion de tickets de Essential', '#A311E2')
-        .setURL('https://discord.com/oauth2/authorize?client_id=760353718699819049&scope=bot&permissions=8')
-        .setThumbnail(client.user.avatarURL()));
-});
-commands_js_1.command(client, 'prefix', (message, args) => __awaiter(void 0, void 0, void 0, function* () {
+commands_js_1.command(exports.client, 'prefix', (message, args) => __awaiter(void 0, void 0, void 0, function* () {
     const limite = 3;
     if (!args[0])
         return; //sin argumentos=> devuelve el prefijo actual
@@ -68,7 +52,7 @@ commands_js_1.command(client, 'prefix', (message, args) => __awaiter(void 0, voi
     });
     newData.save();
 }));
-commands_js_1.command(client, 'test', (message, args) => {
+commands_js_1.command(exports.client, 'test', (message, args) => {
     if (!message.member.permissions.has('ADMINISTRATOR'))
         return;
     question_js_1.question(message, 'Ticket title?', (answer) => {
@@ -90,7 +74,7 @@ commands_js_1.command(client, 'test', (message, args) => {
                         .then((message) => {
                         const emoji = '❔';
                         message.react(emoji);
-                        client.on('messageReactionAdd', ((reaction, user) => {
+                        exports.client.on('messageReactionAdd', ((reaction, user) => {
                             if (user.bot)
                                 return;
                             if (reaction.emoji.name === emoji && reaction.message === message) {
@@ -118,7 +102,7 @@ function deleteChannels(guild, name) {
         }
     });
 }
-commands_js_1.command(client, 'ticket', (message, args) => __awaiter(void 0, void 0, void 0, function* () {
+commands_js_1.command(exports.client, 'ticket', (message, args) => __awaiter(void 0, void 0, void 0, function* () {
     let ticket = yield Ticket_js_1.Ticket.findOne({ GuildID: message.guild.id });
     if (!message.member.hasPermission('MANAGE_GUILD')) {
         return message.channel.send('You are missing permissions! You must have the **MANAGE_SERVER** permission.');
@@ -215,10 +199,9 @@ class errorMessage extends discord_js_1.MessageEmbed {
         this.setColor('#FD0505');
     }
 }
-client.login(process.env.DISCORD_BOT_TOKEN);
+exports.client.login(process.env.DISCORD_BOT_TOKEN);
 const cooldown = new Set();
-let categoryId;
-client.on('messageReactionAdd', (reaction, user) => __awaiter(void 0, void 0, void 0, function* () {
+exports.client.on('messageReactionAdd', (reaction, user) => __awaiter(void 0, void 0, void 0, function* () {
     if (user.bot)
         return;
     if (reaction.message.partial)
@@ -265,11 +248,11 @@ client.on('messageReactionAdd', (reaction, user) => __awaiter(void 0, void 0, vo
         reaction.users.remove(user.id);
         const successEmbed = new discord_js_1.MessageEmbed()
             .setTitle(`Ticket #${'0'.repeat(4 - data.TicketNumber.toString().length)}${data.TicketNumber}`)
-            .setDescription(`This ticket was created by ${user.toString()} y viene del canal ${oldChannel}. Please say \`done\` when you're finished.`)
+            .setDescription(`This ticket was created by ${user.toString()} y viene del canal ${oldChannel}.Say \`take \` to take this ticket.\n Please say \`done\` when you're finished.`)
             .setColor('BLUE');
         let successMsg = yield channel.send(`${user.toString()}, ${channel.guild.roles.cache.get(data.WhitelistedRole)} `, successEmbed);
         yield cooldown.add(user.id);
-        yield checkIfClose(client, reaction, user, successMsg, channel);
+        yield checkIfClose(exports.client, reaction, user, successMsg, channel);
         yield checkIfTake(user, channel);
         setTimeout(function () {
             cooldown.delete(user.id);

@@ -9,3 +9,4 @@ export const run: RunFucntion = async (client, message, args) => {
         .setThumbnail(client.user.avatarURL())
     )
 }
+

@@ -1,6 +1,7 @@
 import { Schema, model, Model, Document } from "mongoose";
 
 export interface ITicket extends Document {
+    CategoryID: string,
     MessageID: string,
     GuildID: string,
     TicketNumber: number,
@@ -8,6 +9,7 @@ export interface ITicket extends Document {
 }
 
 export const TicketSchema: Schema = new Schema({
+    CategoryID: String,
     MessageID: String,
     GuildID: String,
     TicketNumber: Number,

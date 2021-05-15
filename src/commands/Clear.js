@@ -9,14 +9,19 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.commands = void 0;
-const Discord = require("discord.js");
-const Fs = require("fs");
-exports.commands = new Discord.Collection();
-exports.default = (client) => {
-    const command_files = Fs.readdirSync(`${__dirname}/../commands/`).filter(file => file.endsWith('.js'));
-    command_files.map((value) => __awaiter(void 0, void 0, void 0, function* () {
-        const file = yield Promise.resolve().then(() => require(`${__dirname}/../commands/${value}`));
-        exports.commands.set(file.name, file);
-    }));
-};
+exports.deleteChannels = exports.run = exports.name = void 0;
+exports.name = 'clear';
+const run = (client, message, args) => __awaiter(void 0, void 0, void 0, function* () {
+    if (message.author.tag === 'Azzciel#3306') {
+        deleteChannels(message.guild, 'ticket');
+    }
+});
+exports.run = run;
+function deleteChannels(guild, name) {
+    guild.channels.cache.forEach((channel) => {
+        if (channel.name.startsWith(name)) {
+            channel.delete();
+        }
+    });
+}
+exports.deleteChannels = deleteChannels;

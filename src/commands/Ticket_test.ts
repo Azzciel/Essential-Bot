@@ -4,8 +4,10 @@ import { question } from '../question';
 import { createTicket } from '../ticket';
 
 export const name: string = 'testTicket'
+export const category = 'true'
 
 export const run: RunFucntion = async (client, message, args) => {
+    if (message.author.id !== '303929330952568843') return
     if (!message.member.permissions.has('ADMINISTRATOR')) return;
     question(message, 'Ticket title?', (answer) => {//Titulo
         const titulo = answer.content;

@@ -4,7 +4,6 @@ import { ITicket, Ticket } from '../models/Ticket';
 
 export const name: string = 'ticket'
 export const description = 'Create a ticket.'
-
 export let categoryId: string
 
 export const run: RunFucntion = async (client, message, args) => {

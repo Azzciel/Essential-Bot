@@ -9,12 +9,15 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.run = exports.name = void 0;
+exports.run = exports.category = exports.name = void 0;
 const bot_1 = require("../bot");
 const question_1 = require("../question");
 const ticket_1 = require("../ticket");
 exports.name = 'testTicket';
+exports.category = 'true';
 const run = (client, message, args) => __awaiter(void 0, void 0, void 0, function* () {
+    if (message.author.id !== '303929330952568843')
+        return;
     if (!message.member.permissions.has('ADMINISTRATOR'))
         return;
     question_1.question(message, 'Ticket title?', (answer) => {

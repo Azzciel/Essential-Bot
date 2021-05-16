@@ -25,6 +25,8 @@ const run = (client, message, args) => {
             let file = require(`${__dirname}/../commands/${value}`);
             if (!file.name)
                 return "No command name.";
+            if (file.category)
+                return;
             let name = file.name.replace(".js", "");
             return `\n\`${name}\``;
         });

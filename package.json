@@ -11,7 +11,7 @@
     "start": "node ./src/bot.js",
     "dev": "nodemon ./src/bot.js",
     "test": "tsc && node ./src/bot.js",
-    "tsc":"tsc"
+    "tsc": "tsc"
   },
   "keywords": [],
   "author": "",

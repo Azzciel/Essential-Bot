@@ -9,8 +9,10 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.run = exports.name = void 0;
+exports.run = exports.args = exports.description = exports.name = void 0;
 exports.name = 'kick';
+exports.description = 'Kick a member.';
+exports.args = '<memberID>';
 const run = (client, message, args) => __awaiter(void 0, void 0, void 0, function* () {
     if (!message.member.hasPermission('KICK_MEMBERS'))
         return;

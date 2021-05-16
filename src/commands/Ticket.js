@@ -9,10 +9,11 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.run = exports.categoryId = exports.name = void 0;
+exports.run = exports.categoryId = exports.description = exports.name = void 0;
 const discord_js_1 = require("discord.js");
 const Ticket_1 = require("../models/Ticket");
 exports.name = 'ticket';
+exports.description = 'Create a ticket.';
 const run = (client, message, args) => __awaiter(void 0, void 0, void 0, function* () {
     let ticket = yield Ticket_1.Ticket.findOne({ GuildID: message.guild.id });
     if (!message.member.hasPermission('MANAGE_GUILD')) {
@@ -27,6 +28,15 @@ const run = (client, message, args) => __awaiter(void 0, void 0, void 0, functio
     const firstCollector = new discord_js_1.MessageCollector(message.channel, firstFilter, { max: 2 });
     let embedDescription;
     firstCollector.on('collect', (msg) => __awaiter(void 0, void 0, void 0, function* () {
+        if (msg.content === 'cancel') {
+            const cancelEmbed = new discord_js_1.MessageEmbed()
+                .setTitle('Ticket System Setup')
+                .setDescription('The Ticket System Setup was cancelled.')
+                .setColor('RED');
+            msg.channel.send(cancelEmbed);
+            firstCollector.stop();
+            return;
+        }
         embedDescription = msg.content;
         const secondEmbed = new discord_js_1.MessageEmbed()
             .setTitle('Ticket System Setup')

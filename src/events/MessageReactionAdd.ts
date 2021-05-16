@@ -8,12 +8,6 @@ let category: string
 const cooldown = new Set();
 
 export const run: RunFucntion = async (client, reaction: MessageReaction, user: User) => {
-    try {
-        category = reaction.message.guild.channels.cache.find(c => c.name == 'Tickets' && c.type == 'category').id
-    } catch (error) {
-        reaction.message.guild.channels.create('Tickets', { type: 'category' }).then(msg => category = msg.id);
-    }
-
     if (user.bot) return;
 
     if (reaction.message.partial) await reaction.message.fetch();
@@ -26,6 +20,21 @@ export const run: RunFucntion = async (client, reaction: MessageReaction, user: 
         MessageID: reaction.message.id
     });
     if (!data) return;//si no existe ticket return
+    else {
+        try {
+            reaction.message.guild.channels.cache.get(data.CategoryID)
+            category = data.CategoryID
+        } catch (error) {
+            reaction.message.guild.channels.create('Tickets', { type: 'category' }).then(msg => { data.CategoryID = msg.id; category = msg.id });
+            await data.save();
+            console.error(`Este es el error : ${error}`)
+        }
+    }
+    try {
+        category = reaction.message.guild.channels.cache.find(c => c.name == 'Tickets' && c.type == 'category').id
+    } catch (error) {
+        reaction.message.guild.channels.create('Tickets', { type: 'category' }).then(msg => category = msg.id);
+    }
     if (reaction.message.partial) await reaction.message.fetch();
 
     if (reaction.emoji.name === '🎟' && reaction.message.id === data.MessageID) {
@@ -59,7 +68,7 @@ export const run: RunFucntion = async (client, reaction: MessageReaction, user: 
 
         const successEmbed = new MessageEmbed()
             .setTitle(`Ticket #${'0'.repeat(4 - data.TicketNumber.toString().length)}${data.TicketNumber}`)
-            .setDescription(`This ticket was created by ${user.toString()} y viene del canal ${oldChannel}.\nSay \`take\` to take this ticket.\n Please say \`done\` when you're finished.`)
+            .setDescription(`This ticket was created by ${user.toString()} from ${oldChannel}.\nSay \`take\` to take this ticket.\nPlease say \`done\` when you're finished.`)
             .setColor('BLUE');
         let successMsg = await channel.send(`${user.toString()}, ${channel.guild.roles.cache.get(data.WhitelistedRole)} `, successEmbed);
         await cooldown.add(user.id);

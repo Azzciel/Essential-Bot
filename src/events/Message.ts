@@ -4,7 +4,7 @@ import { Command } from "../Interfaces/Command";
 import { RunFucntion } from "../Interfaces/Event";
 import { IPrefix, Prefix } from "../models/prefix";
 
-let PREFIX: string
+export let PREFIX: string
 
 export const run: RunFucntion = async (client, message: Message) => {
     const data: IPrefix = await Prefix.findOne({
@@ -13,7 +13,7 @@ export const run: RunFucntion = async (client, message: Message) => {
     if (data) {
         PREFIX = data.Prefix;
     } else {
-        PREFIX = '!';
+        PREFIX = 't.';
     }
     if (message.author.bot) return;
     if (message.content.startsWith(PREFIX)) {

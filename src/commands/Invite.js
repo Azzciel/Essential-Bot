@@ -9,9 +9,11 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.run = exports.name = void 0;
+exports.run = exports.args = exports.description = exports.name = void 0;
 const bot_1 = require("../bot");
 exports.name = 'invite';
+exports.description = 'Invite this bot to your server.';
+exports.args = '';
 const run = (client, message, args) => __awaiter(void 0, void 0, void 0, function* () {
     message.channel.send(bot_1.embedMessage('Agregame a tu servidor.', 'Sistema de gestion de tickets de Essential', '#A311E2')
         .setURL('https://discord.com/oauth2/authorize?client_id=760353718699819049&scope=bot&permissions=8')

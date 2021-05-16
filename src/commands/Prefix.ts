@@ -3,6 +3,8 @@ import { RunFucntion } from '../Interfaces/Command';
 import { IPrefix, Prefix } from '../models/prefix';
 
 export const name: string = 'prefix'
+export const description = 'Change the prefix.'
+export const args = '<newPrefix>'
 
 export const run: RunFucntion = async (client, message, args) => {
     const limite = 3

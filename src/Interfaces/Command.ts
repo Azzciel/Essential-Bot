@@ -6,6 +6,8 @@ export interface RunFucntion {
 
 export interface Command {
     name: string,
+    args: string,
+    description: string,
     category: string,
     run: RunFucntion
 }

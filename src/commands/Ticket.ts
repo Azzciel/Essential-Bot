@@ -3,6 +3,7 @@ import { RunFucntion } from '../Interfaces/Command';
 import { ITicket, Ticket } from '../models/Ticket';
 
 export const name: string = 'ticket'
+export const description = 'Create a ticket.'
 
 export let categoryId: string
 
@@ -11,6 +12,7 @@ export const run: RunFucntion = async (client, message, args) => {
     if (!message.member.hasPermission('MANAGE_GUILD')) {
         return message.channel.send('You are missing permissions! You must have the **MANAGE_SERVER** permission.');
     }
+
     const firstEmbed = new MessageEmbed()
         .setTitle('Ticket System Setup')
         .setDescription('What do you want the embed description to be?')
@@ -23,6 +25,15 @@ export const run: RunFucntion = async (client, message, args) => {
     let embedDescription: string;
 
     firstCollector.on('collect', async msg => {
+        if (msg.content === 'cancel') {
+            const cancelEmbed = new MessageEmbed()
+                .setTitle('Ticket System Setup')
+                .setDescription('The Ticket System Setup was cancelled.')
+                .setColor('RED');
+            msg.channel.send(cancelEmbed);
+            firstCollector.stop();
+            return
+        }
         embedDescription = msg.content;
         const secondEmbed = new MessageEmbed()
             .setTitle('Ticket System Setup')

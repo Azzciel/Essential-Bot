@@ -16,12 +16,6 @@ exports.name = 'messageReactionAdd';
 let category;
 const cooldown = new Set();
 const run = (client, reaction, user) => __awaiter(void 0, void 0, void 0, function* () {
-    try {
-        category = reaction.message.guild.channels.cache.find(c => c.name == 'Tickets' && c.type == 'category').id;
-    }
-    catch (error) {
-        reaction.message.guild.channels.create('Tickets', { type: 'category' }).then(msg => category = msg.id);
-    }
     if (user.bot)
         return;
     if (reaction.message.partial)
@@ -36,6 +30,23 @@ const run = (client, reaction, user) => __awaiter(void 0, void 0, void 0, functi
     });
     if (!data)
         return; //si no existe ticket return
+    else {
+        try {
+            reaction.message.guild.channels.cache.get(data.CategoryID);
+            category = data.CategoryID;
+        }
+        catch (error) {
+            reaction.message.guild.channels.create('Tickets', { type: 'category' }).then(msg => { data.CategoryID = msg.id; category = msg.id; });
+            yield data.save();
+            console.error(`Este es el error : ${error}`);
+        }
+    }
+    try {
+        category = reaction.message.guild.channels.cache.find(c => c.name == 'Tickets' && c.type == 'category').id;
+    }
+    catch (error) {
+        reaction.message.guild.channels.create('Tickets', { type: 'category' }).then(msg => category = msg.id);
+    }
     if (reaction.message.partial)
         yield reaction.message.fetch();
     if (reaction.emoji.name === '🎟' && reaction.message.id === data.MessageID) {
@@ -68,7 +79,7 @@ const run = (client, reaction, user) => __awaiter(void 0, void 0, void 0, functi
         reaction.users.remove(user.id);
         const successEmbed = new discord_js_1.MessageEmbed()
             .setTitle(`Ticket #${'0'.repeat(4 - data.TicketNumber.toString().length)}${data.TicketNumber}`)
-            .setDescription(`This ticket was created by ${user.toString()} y viene del canal ${oldChannel}.\nSay \`take\` to take this ticket.\n Please say \`done\` when you're finished.`)
+            .setDescription(`This ticket was created by ${user.toString()} from ${oldChannel}.\nSay \`take\` to take this ticket.\nPlease say \`done\` when you're finished.`)
             .setColor('BLUE');
         let successMsg = yield channel.send(`${user.toString()}, ${channel.guild.roles.cache.get(data.WhitelistedRole)} `, successEmbed);
         yield cooldown.add(user.id);

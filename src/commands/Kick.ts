@@ -2,6 +2,8 @@
 import { RunFucntion } from "../Interfaces/Command";
 
 export const name: string = 'kick'
+export const description = 'Kick a member.'
+export const args = '<memberID>'
 
 export const run: RunFucntion = async (client, message, args) => {
     if (!message.member.hasPermission('KICK_MEMBERS')) return;

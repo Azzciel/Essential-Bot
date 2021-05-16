@@ -9,10 +9,12 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.run = exports.name = void 0;
+exports.run = exports.args = exports.description = exports.name = void 0;
 const bot_1 = require("../bot");
 const prefix_1 = require("../models/prefix");
 exports.name = 'prefix';
+exports.description = 'Change the prefix.';
+exports.args = '<newPrefix>';
 const run = (client, message, args) => __awaiter(void 0, void 0, void 0, function* () {
     const limite = 3;
     if (!args[0])

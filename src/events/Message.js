@@ -9,26 +9,25 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.name = exports.run = void 0;
+exports.name = exports.run = exports.PREFIX = void 0;
 const command_handler_1 = require("../handlers/command_handler");
 const prefix_1 = require("../models/prefix");
-let PREFIX;
 const run = (client, message) => __awaiter(void 0, void 0, void 0, function* () {
     const data = yield prefix_1.Prefix.findOne({
         GuildID: message.guild.id
     });
     if (data) {
-        PREFIX = data.Prefix;
+        exports.PREFIX = data.Prefix;
     }
     else {
-        PREFIX = '!';
+        exports.PREFIX = 't.';
     }
     if (message.author.bot)
         return;
-    if (message.content.startsWith(PREFIX)) {
+    if (message.content.startsWith(exports.PREFIX)) {
         const [CMD_NAME, ...args] = message.content
             .trim()
-            .substring(PREFIX.length)
+            .substring(exports.PREFIX.length)
             .split(/\s+/);
         const command = command_handler_1.commands.get(CMD_NAME);
         if (!command)

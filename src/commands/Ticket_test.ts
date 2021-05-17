@@ -1,7 +1,5 @@
-import { embedMessage } from '../bot';
 import { RunFucntion } from '../Interfaces/Command';
 import { question } from '../question';
-import { createTicket } from '../ticket';
 
 export const name: string = 'testTicket'
 export const category = 'true'
@@ -24,17 +22,6 @@ export const run: RunFucntion = async (client, message, args) => {
                 question(message, 'Ticket roles?', (answer) => {//Roles
                     const roles = answer.mentions.roles;
                     answer.delete({ timeout: 900 });
-                    message.channel.send(embedMessage(titulo, description, color))
-                        .then((message) => {
-                            const emoji = '❔';
-                            message.react(emoji);
-                            client.on('messageReactionAdd', ((reaction, user) => {
-                                if (user.bot) return;
-                                if (reaction.emoji.name === emoji && reaction.message === message) {
-                                    createTicket(message, user, roles);
-                                }
-                            }))
-                        })
                 });
             })
         });

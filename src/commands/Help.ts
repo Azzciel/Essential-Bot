@@ -3,7 +3,7 @@ import { readdirSync } from 'fs';
 import { fileURLToPath } from 'url';
 import { PREFIX } from '../events/Message';
 import { commands } from '../handlers/command_handler';
-import { RunFucntion } from '../Interfaces/Command';
+import { Command, RunFucntion } from '../Interfaces/Command';
 
 export const name: string = 'help'
 export const description = 'Shows all available bot commands..'
@@ -26,9 +26,10 @@ export const run: RunFucntion = (client, message, args) => {
         const command_files: string[] = readdirSync(`${__dirname}/../commands/`).filter(file => file.endsWith('.js'))
         const cmds = command_files.map((value) => {
             //let file = require(`../../commands/${dir}/${command}`);
-            let file = require(`${__dirname}/../commands/${value}`);
+            let file: Command = require(`${__dirname}/../commands/${value}`);
             if (!file.name) return "No command name.";
-            if (file.category) return
+            if (file.category && !message.member.hasPermission('ADMINISTRATOR')) return
+            if (!message.member.hasPermission(file.permissions)) return
             let name = file.name.replace(".js", "");
 
             return `\n\`${name}\``;

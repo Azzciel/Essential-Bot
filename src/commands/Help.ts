@@ -46,7 +46,7 @@ export const run: RunFucntion = (client, message, args) => {
             .setTitle("📬 Need help? Here are all of my commands:")
             .addField('Commands', cmds.length === 0 ? "In progress." : cmds.join(" "))
             .setDescription(
-                `Use \`${PREFIX}help\` followed by a command name to get more additional information on a command. For example: \`${PREFIX}help ban\`.`
+                `Use \`${PREFIX}help\` followed by a command name to get more additional information on a command. For example: \`${PREFIX}help help\`.`
             )
             .setFooter(
                 `Requested by ${message.author.tag}`,

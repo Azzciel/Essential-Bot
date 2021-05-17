@@ -40,7 +40,7 @@ const run = (client, message, args) => {
         const embed = new discord_js_1.MessageEmbed()
             .setTitle("📬 Need help? Here are all of my commands:")
             .addField('Commands', cmds.length === 0 ? "In progress." : cmds.join(" "))
-            .setDescription(`Use \`${Message_1.PREFIX}help\` followed by a command name to get more additional information on a command. For example: \`${Message_1.PREFIX}help ban\`.`)
+            .setDescription(`Use \`${Message_1.PREFIX}help\` followed by a command name to get more additional information on a command. For example: \`${Message_1.PREFIX}help help\`.`)
             .setFooter(`Requested by ${message.author.tag}`, message.author.displayAvatarURL({ dynamic: true }))
             .setTimestamp()
             .setColor(roleColor);

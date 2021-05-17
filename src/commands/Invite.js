@@ -16,7 +16,7 @@ exports.description = 'Invite this bot to your server.';
 exports.args = '';
 const run = (client, message, args) => __awaiter(void 0, void 0, void 0, function* () {
     message.channel.send(bot_1.embedMessage('Agregame a tu servidor.', 'Sistema de gestion de tickets de Essential', '#A311E2')
-        .setURL('https://discord.com/oauth2/authorize?client_id=760353718699819049&scope=bot&permissions=8')
+        .setURL(`https://discord.com/oauth2/authorize?client_id=${client.user.id}&scope=bot&permissions=8`)
         .setThumbnail(client.user.avatarURL()));
 });
 exports.run = run;

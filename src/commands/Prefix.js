@@ -33,6 +33,7 @@ const run = (client, message, args) => __awaiter(void 0, void 0, void 0, functio
         Prefix: args[0],
         GuildID: message.guild.id
     });
+    client.user.setActivity(`${newData.Prefix}help`);
     newData.save();
 });
 exports.run = run;

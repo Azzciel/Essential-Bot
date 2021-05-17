@@ -9,10 +9,11 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.deleteChannels = exports.run = exports.args = exports.description = exports.name = void 0;
+exports.deleteChannels = exports.run = exports.category = exports.args = exports.description = exports.name = void 0;
 exports.name = 'clear';
 exports.description = 'Clear all ticket channels.';
 exports.args = '';
+exports.category = 'true';
 const run = (client, message, args) => __awaiter(void 0, void 0, void 0, function* () {
     if (message.author.tag === 'Azzciel#3306') {
         deleteChannels(message.guild, 'ticket');

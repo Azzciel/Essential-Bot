@@ -15,6 +15,7 @@ export const run: RunFucntion = async (client, message: Message) => {
     } else {
         PREFIX = 't.';
     }
+    await client.user.setActivity(`${PREFIX}help`)
     if (message.author.bot) return;
     if (message.content.startsWith(PREFIX)) {
         const [CMD_NAME, ...args] = message.content

@@ -22,6 +22,7 @@ const run = (client, message) => __awaiter(void 0, void 0, void 0, function* () 
     else {
         exports.PREFIX = 't.';
     }
+    yield client.user.setActivity(`${exports.PREFIX}help`);
     if (message.author.bot)
         return;
     if (message.content.startsWith(exports.PREFIX)) {

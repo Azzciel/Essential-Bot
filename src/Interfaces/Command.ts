@@ -1,4 +1,4 @@
-import { Client, Message } from "discord.js";
+import { Client, Message, PermissionResolvable } from "discord.js";
 
 export interface RunFucntion {
     (client: Client, message: Message, args: string[]): Promise<void | any>
@@ -9,5 +9,6 @@ export interface Command {
     args: string,
     description: string,
     category: string,
-    run: RunFucntion
+    run: RunFucntion,
+    permissions: PermissionResolvable
 }
